@@ -1,38 +1,41 @@
 import React, { Component } from "react"
 import "./App.css"
 import ApolloClient, { gql } from "apollo-boost"
+import { ApolloProvider, Query } from "react-apollo"
 
 const client = new ApolloClient({
-	uri: "http://localhost:4000/graphql"
+	uri: "http://localhost:3000/graphql"
 })
 
-class App extends Component {
-	componentDidMount() {
-		client
-			.query({
-				query: gql`
-					{
-						movies {
-							id
-							title
-							release_date
-						}
-					}
-				`
-			})
-			.then(result => this.setState(result.data))
+const MOVIES_QUERY = gql`
+	{
+		movies {
+			id
+			title
+			release_date
+		}
 	}
+`
 
+class App extends Component {
 	render() {
 		return (
-			<div className="App">
-				{!this.state || !this.state.movies
-					? ""
-					: this.state.movies.map(movie => (
-							<div key={movie.id}>{movie.title}</div>
-					  ))}
-			</div>
+			<ApolloProvider client={client}>
+				<div className="App">
+					<Query query={MOVIES_QUERY}>
+						{({ loading, error, data }) => {
+							if (loading) return <p>Loading...</p>
+							if (error) return <p>Error :(</p>
+							return this.renderMovies(data.movies)
+						}}
+					</Query>
+				</div>
+			</ApolloProvider>
 		)
+	}
+
+	renderMovies(movies) {
+		return movies.map(movie => <div key={movie.id}>{movie.title}</div>)
 	}
 }
 
