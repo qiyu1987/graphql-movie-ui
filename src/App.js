@@ -4,7 +4,7 @@ import ApolloClient, { gql } from "apollo-boost"
 import { ApolloProvider, Query } from "react-apollo"
 
 const client = new ApolloClient({
-	uri: "http://localhost:3000/graphql"
+	uri: "http://localhost:4000/graphql"
 })
 
 const MOVIES_QUERY = gql`
